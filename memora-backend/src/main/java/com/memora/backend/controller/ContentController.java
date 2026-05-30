@@ -30,10 +30,10 @@ public class ContentController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Page<ContentResponse>> getAll(
+    public ResponseEntity<List<ContentResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(contentService.getAllContent(TEST_USER_ID, page, size));
+        return ResponseEntity.ok(contentService.getAllContent(TEST_USER_ID, page, size).getContent());
     }
 
     @DeleteMapping("/{contentId}")
