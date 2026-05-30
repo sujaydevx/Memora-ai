@@ -36,3 +36,9 @@ minio_data/
 
 # Spring Boot
 memora-backend/src/main/resources/application-local.properties
+
+# Python
+memora-python/__pycache__/
+memora-python/*.pyc
+memora-python/.venv/
+memora-python/venv/
