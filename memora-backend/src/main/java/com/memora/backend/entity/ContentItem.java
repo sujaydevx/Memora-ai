@@ -3,6 +3,9 @@ package com.memora.backend.entity;
 import com.memora.backend.converter.EncryptedStringConverter;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +26,7 @@ public class ContentItem {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "content_type")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private ContentType type;
 
     @Convert(converter = EncryptedStringConverter.class)
