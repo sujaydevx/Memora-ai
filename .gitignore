@@ -1,0 +1,38 @@
+# Maven
+memora-backend/target/
+memora-backend/.mvn/
+memora-backend/mvnw
+memora-backend/mvnw.cmd
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+*.env
+.env
+
+# Logs
+*.log
+logs/
+
+# Docker volumes
+postgres_data/
+minio_data/
+
+# Java
+*.class
+*.jar
+*.war
+
+# Spring Boot
+memora-backend/src/main/resources/application-local.properties

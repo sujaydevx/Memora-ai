@@ -1,0 +1,55 @@
+# Maven build output
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven wrapper
+.mvn/
+.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# Spring Boot config (never commit real credentials)
+src/main/resources/application.properties
+src/test/resources/application.properties
+src/main/resources/application-local.properties
+
+# Java
+*.class
+*.jar
+*.war
+
+# Docker volumes
+postgres_data/
+minio_data/
+
+# General
+HELP.md
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/

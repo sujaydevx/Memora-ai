@@ -1,0 +1,15 @@
+CREATE INDEX idx_users_email_hash ON users(email_hash);
+CREATE INDEX idx_content_items_user_id ON content_items(user_id);
+CREATE INDEX idx_content_items_session_id ON content_items(session_id);
+CREATE INDEX idx_content_items_type ON content_items(type);
+CREATE INDEX idx_content_items_checksum ON content_items(checksum);
+CREATE INDEX idx_topics_user_id ON topics(user_id);
+CREATE INDEX idx_topics_parent_topic_id ON topics(parent_topic_id);
+CREATE INDEX idx_topic_clusters_user_id ON topic_clusters(user_id);
+CREATE INDEX idx_highlights_content_item_id ON highlights(content_item_id);
+CREATE INDEX idx_highlights_user_id ON highlights(user_id);
+CREATE INDEX idx_resurfacing_events_user_id ON resurfacing_events(user_id);
+CREATE INDEX idx_exam_profiles_user_id ON exam_profiles(user_id);
+CREATE INDEX idx_exam_topic_coverages_exam_profile_id ON exam_topic_coverages(exam_profile_id);
+CREATE INDEX idx_compiled_documents_user_id ON compiled_documents(user_id);
+CREATE INDEX idx_study_sessions_user_id ON study_sessions(user_id);
