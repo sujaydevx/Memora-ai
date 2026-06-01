@@ -7,8 +7,8 @@ import com.memora.backend.service.ContentService;
 import com.memora.backend.service.ResurfaceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
@@ -18,32 +18,37 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ContentController {
 
-    private static final UUID TEST_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
-
     private final ContentService contentService;
     private final ResurfaceService resurfaceService;
 
+    private UUID getCurrentUserId(Authentication authentication) {
+        return (UUID) authentication.getPrincipal();
+    }
+
     @PostMapping("/save")
-    public ResponseEntity<ContentResponse> save(@RequestBody @Valid SaveContentRequest request) {
-        ContentResponse response = contentService.saveContent(request, TEST_USER_ID);
-        return ResponseEntity.status(201).body(response);
+    public ResponseEntity<ContentResponse> save(@RequestBody @Valid SaveContentRequest request,
+                                                Authentication authentication) {
+        return ResponseEntity.status(201).body(contentService.saveContent(request, getCurrentUserId(authentication)));
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<ContentResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(contentService.getAllContent(TEST_USER_ID, page, size).getContent());
+            @RequestParam(defaultValue = "20") int size,
+            Authentication authentication) {
+        return ResponseEntity.ok(contentService.getAllContent(getCurrentUserId(authentication), page, size).getContent());
     }
 
     @DeleteMapping("/{contentId}")
-    public ResponseEntity<Void> delete(@PathVariable UUID contentId) {
-        contentService.deleteContent(contentId, TEST_USER_ID);
+    public ResponseEntity<Void> delete(@PathVariable UUID contentId,
+                                       Authentication authentication) {
+        contentService.deleteContent(contentId, getCurrentUserId(authentication));
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/resurface")
-    public ResponseEntity<List<ResurfaceResponse>> resurface(@RequestParam String context) {
-        return ResponseEntity.ok(resurfaceService.resurface(context, TEST_USER_ID));
+    public ResponseEntity<List<ResurfaceResponse>> resurface(@RequestParam String context,
+                                                             Authentication authentication) {
+        return ResponseEntity.ok(resurfaceService.resurface(context, getCurrentUserId(authentication)));
     }
 }

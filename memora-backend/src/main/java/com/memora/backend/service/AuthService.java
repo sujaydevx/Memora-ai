@@ -2,7 +2,12 @@ package com.memora.backend.service;
 
 import com.memora.backend.dto.AuthRequest;
 import com.memora.backend.dto.AuthResponse;
+import com.memora.backend.dto.request.LoginRequest;
+import com.memora.backend.dto.request.RegisterRequest;
+import com.memora.backend.dto.response.AuthResponseV2;
 import com.memora.backend.entity.User;
+import com.memora.backend.exception.DuplicateContentException;
+import com.memora.backend.exception.MemoraServiceException;
 import com.memora.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,37 +28,43 @@ public class AuthService {
     private String hashEmail(String email) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(email.toLowerCase().getBytes(StandardCharsets.UTF_8));
+            byte[] hash = digest.digest(email.toLowerCase().trim().getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(hash);
         } catch (Exception e) {
             throw new RuntimeException("Error hashing email", e);
         }
     }
 
-    public AuthResponse register(AuthRequest request) {
+    public AuthResponseV2 register(RegisterRequest request) {
         String emailHash = hashEmail(request.getEmail());
-        if (userRepository.existsByEmailHash(emailHash)) {
-            throw new RuntimeException("Email already registered");
+        if (userRepository.findByEmailHash(emailHash).isPresent()) {
+            throw new DuplicateContentException("Email already registered");
         }
         User user = User.builder()
                 .email(request.getEmail())
                 .emailHash(emailHash)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .displayName(request.getFullName())
+                .displayName(request.getDisplayName())
                 .build();
-        userRepository.save(user);
-        String token = jwtService.generateToken(request.getEmail());
-        return new AuthResponse(token, request.getEmail(), request.getFullName());
+        User saved = userRepository.save(user);
+        String token = jwtService.generateToken(saved.getId(), saved.getEmail());
+        return new AuthResponseV2(token, saved.getId(), request.getEmail(), request.getDisplayName());
     }
 
-    public AuthResponse login(AuthRequest request) {
+    public AuthResponseV2 login(LoginRequest request) {
         String emailHash = hashEmail(request.getEmail());
         User user = userRepository.findByEmailHash(emailHash)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new MemoraServiceException("Invalid credentials"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Invalid password");
+            throw new MemoraServiceException("Invalid credentials");
         }
-        String token = jwtService.generateToken(request.getEmail());
-        return new AuthResponse(token, request.getEmail(), user.getDisplayName());
+        String token = jwtService.generateToken(user.getId(), user.getEmail());
+        return new AuthResponseV2(token, user.getId(), request.getEmail(), user.getDisplayName());
+    }
+
+    public void deleteAccount(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemoraServiceException("User not found"));
+        userRepository.delete(user);
     }
 }
