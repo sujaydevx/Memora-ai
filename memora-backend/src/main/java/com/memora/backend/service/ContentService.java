@@ -120,7 +120,7 @@ public class ContentService {
                 });
     }
 
-    private Topic getPrimaryTopic(ContentItem item) {
+    public Topic getPrimaryTopic(ContentItem item) {
         if (item.getTopics() == null || item.getTopics().isEmpty()) return null;
         return item.getTopics().stream()
                 .filter(t -> t.getParentTopicId() == null)
@@ -165,5 +165,9 @@ public class ContentService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to compute checksum", e);
         }
+    }
+
+    public ContentResponse buildContentResponsePublic(ContentItem item) {
+        return buildContentResponse(item, getPrimaryTopic(item));
     }
 }
